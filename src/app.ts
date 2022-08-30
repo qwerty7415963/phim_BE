@@ -1,16 +1,18 @@
+import { CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
+import { logger, stream } from '@utils/logger';
+
+import { Routes } from '@interfaces/routes.interface';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import errorMiddleware from '@middlewares/error.middleware';
 import express from 'express';
 import helmet from 'helmet';
 import hpp from 'hpp';
+import { initializeApp } from 'firebase/app';
 import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS } from '@config';
-import { Routes } from '@interfaces/routes.interface';
-import errorMiddleware from '@middlewares/error.middleware';
-import { logger, stream } from '@utils/logger';
 
 class App {
   public app: express.Application;
@@ -23,6 +25,7 @@ class App {
     this.port = PORT || 3000;
 
     this.initializeMiddlewares();
+    this.initializeFirebase();
     this.initializeRoutes(routes);
     this.initializeSwagger();
     this.initializeErrorHandling();
@@ -50,6 +53,20 @@ class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
+  }
+
+  private initializeFirebase() {
+    const firebaseConfig = {
+      apiKey: 'AIzaSyAW-jbxdBbFW1a1fyx4f0bqC1VpLIfXmmM',
+      authDomain: 'phim-627b5.firebaseapp.com',
+      projectId: 'phim-627b5',
+      storageBucket: 'phim-627b5.appspot.com',
+      messagingSenderId: '64400460395',
+      appId: '1:64400460395:web:8a41ee2247944a23af3f2e',
+      measurementId: 'G-EVXHMX1MHW',
+    };
+
+    initializeApp(firebaseConfig);
   }
 
   private initializeRoutes(routes: Routes[]) {
